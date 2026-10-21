@@ -1,0 +1,1590 @@
+/* ==========================================================================
+   OVERCOOKED ARCADE: CHEF YANI & POLLO
+   Diseño espacioso, botones blindados sin trabas, cero emojis y alta legibilidad
+   ========================================================================== */
+
+:root {
+  --ink: #231815;
+  --cream: #fffdf5;
+  --bg-floor: #f39c12;
+  --bg-pattern: #e67e22;
+
+  --c-blue: #2980b9;
+  --c-yellow: #f1c40f;
+  --c-red: #c0392b;
+  --c-red-bright: #e74c3c;
+  --c-green: #2ecc71;
+  --c-green-dark: #27ae60;
+  --c-orange: #d35400;
+  --c-purple: #8e44ad;
+
+  --border-thick: 4px solid var(--ink);
+  --border-medium: 3px solid var(--ink);
+  --shadow-block: 0 6px 0 var(--ink);
+  --shadow-small: 0 3px 0 var(--ink);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  color: var(--ink);
+  background-color: var(--bg-floor);
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      var(--bg-pattern) 0,
+      var(--bg-pattern) 32px,
+      var(--bg-floor) 32px,
+      var(--bg-floor) 64px
+    );
+  min-height: 100vh;
+  padding-bottom: 4rem;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, .score-num, .chef-name, .track-title-text, .dish-title, .box-name, .stage-btn, .step-num {
+  font-family: 'Fredoka', sans-serif;
+}
+
+/* Lienzo de partículas */
+#game-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* ==========================================================================
+   TOP BAR STICKY: HUD & TOCADISCOS
+   ========================================================================== */
+
+.game-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  background: #1e272e;
+  border-bottom: var(--border-thick);
+  padding: 0.55rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
+  color: #fff;
+}
+
+.topbar-chefs {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-shrink: 0;
+}
+
+.chefs-tag {
+  background: #2f3640;
+  border: 2px solid #576574;
+  border-radius: 9px;
+  padding: 0.3rem 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.chef-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-yani { background: #f1c40f; }
+.dot-pollo { background: #e74c3c; }
+
+.chef-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.4px;
+}
+
+.chief { color: #f1c40f; }
+.partner { color: #ff7979; }
+.chef-x { font-weight: 900; color: #95a5a6; }
+
+.score-pill {
+  background: #0f1419;
+  border: 2px solid #2ecc71;
+  border-radius: 9px;
+  padding: 0.25rem 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.score-label {
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #95a5a6;
+}
+
+.score-num {
+  font-size: 1.1rem;
+  color: #2ecc71;
+  transition: transform 0.2s ease;
+}
+
+/* Reproductor central */
+.topbar-player {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #2f3640;
+  border: 2px solid #485460;
+  border-radius: 12px;
+  padding: 0.32rem 0.8rem;
+  flex: 1;
+  max-width: 640px;
+  justify-content: space-between;
+  transition: border-color 0.3s ease;
+}
+
+.topbar-player.theme-taylor {
+  border-color: #74b9ff;
+}
+
+.mini-vinyl {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #2f3640 0%, #000 65%);
+  border: 2px solid #718093;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  animation: spinTopVinyl 3.5s linear infinite;
+  animation-play-state: paused;
+}
+
+.mini-vinyl.playing {
+  animation-play-state: running;
+  border-color: #f1c40f;
+}
+
+.topbar-player.theme-taylor .mini-vinyl.playing {
+  border-color: #74b9ff;
+}
+
+@keyframes spinTopVinyl {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.vinyl-core {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #f1c40f;
+  color: #1e272e;
+  font-size: 0.44rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar-player.theme-taylor .vinyl-core {
+  background: #74b9ff;
+}
+
+.player-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.t-btn {
+  background: #353b48;
+  border: 2px solid #718093;
+  border-radius: 7px;
+  width: 32px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.t-btn:hover { background: #4b6584; }
+.t-btn:active { transform: scale(0.94); }
+
+.play-btn {
+  background: #27ae60;
+  border-color: #2ecc71;
+  width: 38px;
+  height: 32px;
+}
+
+.play-btn:hover { background: #2ecc71; }
+
+.track-hud-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  min-width: 150px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.track-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow: hidden;
+}
+
+.track-title-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #f5f6fa;
+  white-space: nowrap;
+}
+
+.track-artist-text {
+  font-size: 0.72rem;
+  color: #dcdde1;
+  white-space: nowrap;
+}
+
+.trench-tape-mini {
+  font-family: 'Permanent Marker', cursive;
+  font-size: 0.56rem;
+  background: #f1c40f;
+  color: #1e272e;
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.topbar-player.theme-taylor .trench-tape-mini {
+  background: #74b9ff;
+  color: #1e272e;
+}
+
+.track-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.track-mini-bar {
+  flex: 1;
+  height: 6px;
+  background: #1e272e;
+  border-radius: 99px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid #485460;
+}
+
+.track-mini-fill {
+  height: 100%;
+  width: 0%;
+  background: #f1c40f;
+  transition: width 0.15s linear;
+}
+
+.topbar-player.theme-taylor .track-mini-fill {
+  background: #74b9ff;
+}
+
+.mini-eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
+.eq-b {
+  width: 3px;
+  height: 3px;
+  background: #f1c40f;
+  border-radius: 1px;
+}
+
+.topbar-player.theme-taylor .eq-b {
+  background: #74b9ff;
+}
+
+.mini-eq.playing .eq-b {
+  animation: eqTopJump 0.45s infinite alternate ease-in-out;
+}
+
+.mini-eq.playing .b1 { animation-delay: 0.1s; }
+.mini-eq.playing .b2 { animation-delay: 0.25s; }
+.mini-eq.playing .b3 { animation-delay: 0.05s; }
+.mini-eq.playing .b4 { animation-delay: 0.35s; }
+.mini-eq.playing .b5 { animation-delay: 0.18s; }
+
+@keyframes eqTopJump {
+  0% { height: 2px; }
+  100% { height: 10px; }
+}
+
+.quick-songs {
+  display: flex;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.q-chip {
+  background: #1e272e;
+  border: 1.5px solid #485460;
+  border-radius: 5px;
+  padding: 0.24rem 0.5rem;
+  color: #bdc3c7;
+  font-size: 0.68rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  touch-action: manipulation;
+  transition: all 0.15s ease;
+}
+
+.q-chip:hover {
+  color: #fff;
+  background: #353b48;
+}
+
+.q-chip.active {
+  background: #f1c40f;
+  color: #1e272e;
+  border-color: #f1c40f;
+}
+
+.topbar-player.theme-taylor .q-chip.active {
+  background: #74b9ff;
+  border-color: #74b9ff;
+}
+
+.topbar-served {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.served-label {
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: #95a5a6;
+}
+
+.plates-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.plate-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #353b48;
+  border: 2px solid #576574;
+  transition: all 0.25s ease;
+}
+
+.plate-dot.done {
+  background: #f1c40f;
+  border-color: #fff;
+  box-shadow: 0 0 6px #f1c40f;
+}
+
+.plate-count-num {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #f5f6fa;
+  margin-left: 0.15rem;
+}
+
+/* ==========================================================================
+   CONTENEDOR PRINCIPAL Y BANNER HERO
+   ========================================================================== */
+
+.kitchen-arcade-wrapper {
+  max-width: 1080px;
+  margin: 1.25rem auto 0;
+  padding: 0 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.hero-chef-banner {
+  background: var(--cream);
+  border: var(--border-thick);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-block);
+  text-align: center;
+}
+
+.hero-awning {
+  height: 18px;
+  background: repeating-linear-gradient(
+    90deg,
+    #c0392b 0,
+    #c0392b 36px,
+    #fffdf5 36px,
+    #fffdf5 72px
+  );
+  border-bottom: var(--border-medium);
+}
+
+.hero-content {
+  padding: 1.15rem 1.5rem 1.3rem;
+}
+
+.hero-badge-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.55rem;
+}
+
+.hero-pill-date {
+  background: #f1c40f;
+  color: var(--ink);
+  font-size: 0.7rem;
+  font-weight: 900;
+  padding: 0.2rem 0.65rem;
+  border-radius: 99px;
+  border: 2px solid var(--ink);
+  letter-spacing: 0.4px;
+}
+
+.hero-pill-mode {
+  background: #2c3e50;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 900;
+  padding: 0.2rem 0.65rem;
+  border-radius: 99px;
+  border: 2px solid var(--ink);
+  letter-spacing: 0.4px;
+}
+
+.hero-main-title {
+  font-size: clamp(1.85rem, 4vw, 2.65rem);
+  color: #c0392b;
+  line-height: 1.1;
+  margin-bottom: 0.4rem;
+}
+
+.hero-subtitle {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #485460;
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.45;
+}
+
+/* ==========================================================================
+   COMANDA ACTIVA Y PREVISUALIZACIÓN COHERENTE DE CAZUELA
+   ========================================================================== */
+
+.ticket-slip {
+  background: #fff;
+  border: var(--border-thick);
+  border-radius: 20px;
+  padding: 1.3rem 1.6rem;
+  box-shadow: var(--shadow-block);
+  position: relative;
+}
+
+.ticket-clips {
+  display: flex;
+  justify-content: space-around;
+  max-width: 240px;
+  margin: -1.8rem auto 0.5rem;
+}
+
+.metal-clip {
+  width: 32px;
+  height: 10px;
+  background: #95a5a6;
+  border: 2.5px solid var(--ink);
+  border-radius: 4px;
+}
+
+.ticket-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2.5px dashed #dcdde1;
+  padding-bottom: 0.6rem;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ticket-id-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ticket-lvl {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: #ecf0f1;
+  padding: 0.15rem 0.55rem;
+  border-radius: 6px;
+  border: 2px solid var(--ink);
+}
+
+.ticket-recipe-sub {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #7f8c8d;
+  letter-spacing: 0.4px;
+}
+
+.ticket-status-label {
+  background: #f1c40f;
+  color: var(--ink);
+  font-weight: 900;
+  font-size: 0.76rem;
+  padding: 0.22rem 0.7rem;
+  border-radius: 8px;
+  border: 2px solid var(--ink);
+}
+
+.dish-showcase {
+  display: grid;
+  grid-template-columns: 155px 1fr 245px;
+  gap: 1.4rem;
+  align-items: center;
+}
+
+.dish-visual-plate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.plate-svg {
+  width: 132px;
+  height: 132px;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.16));
+}
+
+.cazuela-live-tag {
+  font-size: 0.65rem;
+  font-weight: 900;
+  background: #fdfaf0;
+  border: 2px solid var(--ink);
+  padding: 0.12rem 0.5rem;
+  border-radius: 99px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* Capas coherentes de la cazuela */
+.dish-layer,
+.sub-layer {
+  opacity: 0;
+  transform: scale(0.88);
+  transform-origin: 60px 60px;
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dish-layer.visible,
+.sub-layer.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dish-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.dish-title-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.dish-tag {
+  display: inline-block;
+  background: #c0392b;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 0.15rem 0.55rem;
+  border-radius: 5px;
+  letter-spacing: 0.4px;
+}
+
+.dish-title {
+  font-size: 1.65rem;
+  color: var(--ink);
+  line-height: 1.15;
+}
+
+.dish-desc {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #353b48;
+  line-height: 1.45;
+}
+
+.chef-whisper-box {
+  background: #fff9db;
+  border: 2px solid #f39c12;
+  border-left: 5px solid #d35400;
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.85rem;
+  line-height: 1.38;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.whisper-speaker {
+  font-weight: 900;
+  color: #c0392b;
+}
+
+.whisper-text {
+  font-weight: 800;
+  color: #2c3e50;
+}
+
+/* Caja de progreso y checklist de receta */
+.dish-progress-box {
+  background: #fdfaf0;
+  border: var(--border-medium);
+  border-radius: 14px;
+  padding: 0.8rem 0.95rem;
+}
+
+.dish-progress-txt {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #576574;
+  margin-bottom: 0.35rem;
+}
+
+.dish-bar-track {
+  width: 100%;
+  height: 13px;
+  background: #ecf0f1;
+  border: 2px solid var(--ink);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+}
+
+.dish-bar-fill {
+  height: 100%;
+  width: 8%;
+  background: var(--c-green);
+  transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mini-recipe-checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.chk-item {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #7f8c8d;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.chk-box {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  border: 2px solid #7f8c8d;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.chk-item.current {
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.chk-item.current .chk-box {
+  background: #f1c40f;
+  border-color: var(--ink);
+}
+
+.chk-item.done {
+  color: #27ae60;
+  text-decoration: line-through;
+}
+
+.chk-item.done .chk-box {
+  background: #2ecc71;
+  border-color: var(--ink);
+}
+
+/* ==========================================================================
+   BARRA STEPPER LINEAL
+   ========================================================================== */
+
+.stages-stepper-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: var(--border-thick);
+  border-radius: 14px;
+  padding: 0.6rem 1rem;
+  box-shadow: var(--shadow-small);
+  gap: 0.55rem;
+}
+
+.step-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.75rem;
+  border-radius: 99px;
+  border: 2px solid var(--ink);
+  background: #f1f2f6;
+  color: #7f8c8d;
+  font-size: 0.8rem;
+  font-weight: 800;
+  transition: all 0.25s ease;
+}
+
+.step-pill.active {
+  background: #f1c40f;
+  color: var(--ink);
+  transform: scale(1.04);
+  box-shadow: 0 2px 0 var(--ink);
+}
+
+.step-pill.done {
+  background: #2ecc71;
+  color: #fff;
+}
+
+.step-pill.locked {
+  opacity: 0.55;
+}
+
+.step-num {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.68rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-pill.done .step-num {
+  background: #fff;
+  color: #27ae60;
+}
+
+.step-connector {
+  flex: 1;
+  max-width: 48px;
+  height: 4px;
+  background: #dcdde1;
+  border-radius: 2px;
+  transition: background 0.3s ease;
+}
+
+.step-connector.done {
+  background: #2ecc71;
+}
+
+/* ==========================================================================
+   ARENA DE ESTACIONES EN CUADRÍCULA 2x2 (ESPACIOSA Y SIN BOTONES TRABADOS)
+   ========================================================================== */
+
+.kitchen-stage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.station-island {
+  background: #fff;
+  border: var(--border-thick);
+  border-radius: 18px;
+  box-shadow: var(--shadow-block);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, opacity 0.22s ease, border-color 0.22s ease;
+  position: relative;
+}
+
+.station-island.stage-locked {
+  opacity: 0.62;
+  filter: saturate(0.45);
+  background: #f8f9fa;
+}
+
+.station-island.active-focus {
+  opacity: 1;
+  filter: none;
+  border-color: var(--ink);
+  box-shadow: 0 8px 0 var(--ink), 0 0 0 4px #f1c40f;
+  transform: translateY(-3px);
+}
+
+.station-island.completed-step {
+  opacity: 0.92;
+  filter: none;
+  background: #f4fbf7;
+  border-color: #27ae60;
+}
+
+.station-island.shake-locked {
+  animation: lockedNotice 0.35s ease;
+}
+
+@keyframes lockedNotice {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.island-roof {
+  padding: 0.55rem 1rem;
+  border-bottom: var(--border-thick);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+}
+
+.island-pantry .island-roof { background: var(--c-blue); }
+.island-cutting .island-roof { background: #d35400; }
+.island-stove .island-roof { background: var(--c-red); }
+.island-delivery .island-roof { background: var(--c-purple); }
+
+.station-title-tab {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.station-pill-hint {
+  font-size: 0.66rem;
+  font-weight: 900;
+  background: rgba(0, 0, 0, 0.32);
+  padding: 0.15rem 0.5rem;
+  border-radius: 5px;
+  letter-spacing: 0.3px;
+}
+
+.station-island.active-focus .station-pill-hint {
+  background: #f1c40f;
+  color: var(--ink);
+}
+
+.station-island.completed-step .station-pill-hint {
+  background: #2ecc71;
+  color: var(--ink);
+}
+
+.island-body {
+  padding: 1.1rem 1.15rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.85rem;
+  flex: 1;
+}
+
+.step-guide {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #485460;
+  line-height: 1.35;
+}
+
+/* Estación 1: Tarjetas de Ingredientes */
+.ingredients-dock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  width: 100%;
+}
+
+.ingredient-card {
+  width: 100%;
+  background: #fdfaf0;
+  border: var(--border-medium);
+  border-radius: 12px;
+  padding: 0.55rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.12s ease;
+  user-select: none;
+  touch-action: manipulation;
+  text-align: left;
+  font-family: inherit;
+  box-shadow: 0 3px 0 var(--ink);
+}
+
+.ingredient-card * {
+  pointer-events: none;
+}
+
+.ingredient-card:hover:not(.used) {
+  transform: translateY(-2px);
+  background: #fff;
+}
+
+.ingredient-card:active:not(.used) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+
+.ingredient-card.used {
+  background: #eafaf1;
+  border-color: #27ae60;
+  box-shadow: none;
+  cursor: default;
+}
+
+.ing-svg {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+.ing-text-block {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.ing-name {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.ing-sub {
+  font-size: 0.73rem;
+  color: #576574;
+  font-weight: 800;
+}
+
+.ing-status {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: #f1c40f;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.ingredient-card.used .ing-status {
+  background: #2ecc71;
+  color: #fff;
+}
+
+/* Visual Box de Estaciones 2, 3 y 4 */
+.station-visual-box {
+  position: relative;
+  width: 100%;
+  max-width: 240px;
+  height: 115px;
+  margin: 0 auto;
+  background: #fdfaf0;
+  border: 2.5px dashed #bdc3c7;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.station-island.active-focus .station-visual-box {
+  border-color: #d35400;
+  background: #fffdf5;
+}
+
+.station-svg {
+  width: 175px;
+  height: 105px;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.12));
+}
+
+.station-floating-tag {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  background: #f1c40f;
+  color: var(--ink);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 0.16rem 0.55rem;
+  border: 2px solid var(--ink);
+  border-radius: 99px;
+  box-shadow: 0 2px 0 var(--ink);
+  pointer-events: none;
+}
+
+.tag-fire { background: #ff7979; color: var(--ink); }
+.tag-pass { background: #badc58; color: var(--ink); }
+
+/* Controles de estación y botones blindados */
+.station-ctrl-row {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.meter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.meter-caption {
+  color: #576574;
+}
+
+.meter-fraction {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  color: var(--ink);
+  background: #ecf0f1;
+  padding: 0.08rem 0.45rem;
+  border-radius: 5px;
+  border: 1.5px solid var(--ink);
+}
+
+.cut-meter-box {
+  width: 100%;
+  height: 11px;
+  background: #ecf0f1;
+  border: 2px solid var(--ink);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.cut-meter-bar {
+  height: 100%;
+  width: 0%;
+  background: #e67e22;
+  transition: width 0.2s ease;
+}
+
+.bar-fire { background: #e74c3c; }
+.bar-pass { background: #2ecc71; }
+
+/* Botón interactivo de estación: sin reflujos ni bloqueos */
+.stage-btn {
+  width: 100%;
+  min-height: 48px;
+  border: var(--border-medium);
+  border-radius: 12px;
+  padding: 0.55rem 0.9rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--ink);
+  color: #fff;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
+  touch-action: manipulation;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.stage-btn * {
+  pointer-events: none;
+}
+
+.stage-btn .btn-lbl {
+  text-align: left;
+  line-height: 1.2;
+}
+
+.stage-btn .btn-badge {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.18rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.stage-btn:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.stage-btn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+
+.stage-btn:disabled {
+  background: #dcdde1 !important;
+  color: #7f8c8d;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-chop { background: #d35400; }
+.btn-stove { background: #c0392b; }
+.btn-deliver { background: #27ae60; }
+
+/* ==========================================================================
+   TARJETA DE SOCIOS: YANI & POLLO
+   ========================================================================== */
+
+.partnership-footer-card {
+  background: #fff;
+  border: var(--border-thick);
+  border-radius: 22px;
+  padding: 1.75rem 2rem;
+  box-shadow: var(--shadow-block);
+  text-align: center;
+}
+
+.badge-duo {
+  display: inline-block;
+  background: #f1c40f;
+  color: var(--ink);
+  font-weight: 900;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.75rem;
+  border-radius: 99px;
+  border: 2px solid var(--ink);
+  margin-bottom: 0.45rem;
+  letter-spacing: 0.4px;
+}
+
+.partnership-footer-card h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: #c0392b;
+  margin-bottom: 0.3rem;
+}
+
+.partner-header-lead {
+  font-size: 0.94rem;
+  font-weight: 800;
+  color: #576574;
+  margin-bottom: 1.25rem;
+}
+
+.partner-columns {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-bottom: 1.35rem;
+  flex-wrap: wrap;
+}
+
+.chef-box {
+  background: #fdfaf0;
+  border: var(--border-thick);
+  border-radius: 16px;
+  padding: 1.15rem 1.35rem;
+  flex: 1;
+  min-width: 250px;
+  max-width: 360px;
+  text-align: left;
+  box-shadow: var(--shadow-small);
+}
+
+.yani-box {
+  border-color: #c0392b;
+  background: #fff8f6;
+}
+
+.pollo-box {
+  border-color: #d35400;
+  background: #fffdf5;
+}
+
+.box-role {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: #c0392b;
+  letter-spacing: 0.5px;
+}
+
+.pollo-box .box-role {
+  color: #d35400;
+}
+
+.box-name {
+  display: block;
+  font-size: 1.5rem;
+  margin: 0.15rem 0 0.4rem;
+  color: var(--ink);
+}
+
+.box-desc {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #353b48;
+  line-height: 1.45;
+}
+
+.duo-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.duo-amp {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #f1c40f;
+  border: 3px solid var(--ink);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 0 var(--ink);
+}
+
+.anniversary-message {
+  max-width: 760px;
+  margin: 0 auto;
+  background: #fff9db;
+  border: 3px dashed #e67e22;
+  padding: 1.2rem 1.5rem;
+  border-radius: 16px;
+}
+
+.sat-joke {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.2rem;
+  color: #c0392b;
+  margin-bottom: 0.55rem;
+  line-height: 1.38;
+}
+
+.warm-wishes {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #2c3e50;
+  line-height: 1.48;
+}
+
+/* ==========================================================================
+   MODAL DE COMANDA SERVIDA
+   ========================================================================== */
+
+.modal-plate-served {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 39, 46, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1001;
+}
+
+.modal-plate-served.hidden {
+  display: none;
+}
+
+.popup-box {
+  background: #fff;
+  border: var(--border-thick);
+  border-radius: 22px;
+  padding: 1.9rem 1.8rem;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 0 var(--ink);
+  animation: popScale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popScale {
+  from { transform: scale(0.88); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.popup-stars-svg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.6rem;
+}
+
+.star-icon {
+  width: 38px;
+  height: 38px;
+}
+
+.star-center {
+  width: 46px;
+  height: 46px;
+  transform: translateY(-4px);
+}
+
+.popup-ribbon {
+  display: inline-block;
+  background: #27ae60;
+  color: #fff;
+  font-weight: 900;
+  font-size: 0.74rem;
+  padding: 0.22rem 0.85rem;
+  border-radius: 99px;
+  border: 2px solid var(--ink);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.4px;
+}
+
+.popup-box h2 {
+  font-size: 1.7rem;
+  color: var(--ink);
+  margin-bottom: 0.55rem;
+}
+
+.popup-box p {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #353b48;
+  margin-bottom: 0.9rem;
+  line-height: 1.45;
+}
+
+.popup-quote-note {
+  background: #fdfaf0;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #c0392b;
+  margin-bottom: 1rem;
+  line-height: 1.38;
+}
+
+.popup-score-add {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #27ae60;
+  margin-bottom: 1.1rem;
+}
+
+.popup-btn {
+  width: 100%;
+  background: #f1c40f;
+  color: var(--ink);
+  border: var(--border-thick);
+  border-radius: 12px;
+  padding: 0.8rem;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--ink);
+  touch-action: manipulation;
+}
+
+.popup-btn:hover { background: #f39c12; }
+.popup-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--ink);
+}
+
+/* ==========================================================================
+   DISEÑO RESPONSIVO PARA TABLET Y MÓVIL
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .dish-showcase {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .dish-title-row {
+    align-items: center;
+  }
+
+  .chef-whisper-box {
+    justify-content: center;
+    text-align: left;
+  }
+}
+
+@media (max-width: 720px) {
+  .game-topbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "chefs score"
+      "player player";
+    padding: 0.45rem 0.65rem;
+    gap: 0.45rem;
+  }
+
+  .topbar-chefs {
+    grid-area: chefs;
+    gap: 0.4rem;
+  }
+
+  .chefs-tag {
+    padding: 0.22rem 0.5rem;
+  }
+
+  .chef-name {
+    font-size: 0.76rem;
+  }
+
+  .score-pill {
+    padding: 0.2rem 0.5rem;
+  }
+
+  .score-num {
+    font-size: 0.98rem;
+  }
+
+  .topbar-served {
+    grid-area: score;
+  }
+
+  .served-label {
+    display: none;
+  }
+
+  .topbar-player {
+    grid-area: player;
+    max-width: 100%;
+    padding: 0.3rem 0.55rem;
+    gap: 0.5rem;
+  }
+
+  .mini-vinyl {
+    width: 32px;
+    height: 32px;
+  }
+
+  .track-artist-text {
+    display: none;
+  }
+
+  .q-chip {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.64rem;
+  }
+
+  .kitchen-stage-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stages-stepper-bar {
+    padding: 0.5rem 0.6rem;
+    gap: 0.3rem;
+  }
+
+  .step-pill {
+    padding: 0.22rem 0.5rem;
+    font-size: 0.72rem;
+  }
+
+  .step-connector {
+    max-width: 16px;
+  }
+
+  .ticket-slip {
+    padding: 1.1rem;
+  }
+
+  .partnership-footer-card {
+    padding: 1.3rem 1.1rem;
+  }
+
+  .partner-columns {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chef-box {
+    max-width: 100%;
+  }
+
+  .duo-connector {
+    margin: -0.3rem 0;
+  }
+}

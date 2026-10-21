@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feliz Día de la Chef, Yani — Cocina Cooperativa con Pollo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ==================== TOP BAR STICKY: HUD & TOCADISCOS ==================== -->
+  <header class="game-topbar" id="game-topbar">
+    <div class="topbar-chefs">
+      <div class="chefs-tag" title="Dupla titular de cocina">
+        <span class="chef-dot dot-yani"></span>
+        <span class="chef-name chief">CHEF YANI</span>
+        <span class="chef-x">&amp;</span>
+        <span class="chef-dot dot-pollo"></span>
+        <span class="chef-name partner">POLLO</span>
+      </div>
+      <div class="score-pill" title="Fondo acumulado para el futuro restaurante">
+        <span class="score-label">FONDO:</span>
+        <span class="score-num" id="hud-score">$0</span>
+      </div>
+    </div>
+
+    <!-- Reproductor Musical Integrado (Twenty One Pilots & Taylor Swift) -->
+    <div class="topbar-player" id="topbar-player">
+      <div class="mini-vinyl" id="top-vinyl" title="Tocadiscos de la Cocina">
+        <div class="vinyl-grooves"></div>
+        <div class="vinyl-core" id="vinyl-tag">||-//</div>
+      </div>
+
+      <div class="player-buttons">
+        <button class="t-btn" id="btn-prev" type="button" aria-label="Canción anterior" title="Anterior">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><polygon points="6,6 6,18 9,18 9,6"/><polygon points="18,6 9,12 18,18"/></svg>
+        </button>
+        <button class="t-btn play-btn" id="btn-play" type="button" aria-label="Reproducir o pausar" title="Reproducir / Pausar">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" id="play-icon"><polygon points="7,4 19,12 7,20"/></svg>
+        </button>
+        <button class="t-btn" id="btn-next" type="button" aria-label="Siguiente canción" title="Siguiente">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><polygon points="6,6 15,12 6,18"/><polygon points="15,6 15,18 18,18 18,6"/></svg>
+        </button>
+      </div>
+
+      <div class="track-hud-info">
+        <div class="track-row">
+          <span class="track-title-text" id="top-song-title">Jumpsuit</span>
+          <span class="track-artist-text" id="top-song-artist">Twenty One Pilots</span>
+          <span class="trench-tape-mini" id="top-song-tag">TRENCH ||-//</span>
+        </div>
+        <div class="track-progress-row">
+          <div class="track-mini-bar" id="track-seek-bar" title="Adelantar canción">
+            <div class="track-mini-fill" id="track-seek-fill"></div>
+          </div>
+          <div class="mini-eq" id="top-eq" aria-hidden="true">
+            <span class="eq-b b1"></span>
+            <span class="eq-b b2"></span>
+            <span class="eq-b b3"></span>
+            <span class="eq-b b4"></span>
+            <span class="eq-b b5"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-songs" role="group" aria-label="Selección rápida de canciones">
+        <button class="q-chip active" type="button" data-idx="0">Jumpsuit</button>
+        <button class="q-chip" type="button" data-idx="1">My Blood</button>
+        <button class="q-chip" type="button" data-idx="2">Shake It Off</button>
+      </div>
+    </div>
+
+    <!-- Contador de Órdenes Completadas -->
+    <div class="topbar-served" title="Cazuelas servidas en el turno">
+      <span class="served-label">ÓRDENES:</span>
+      <div class="plates-counter">
+        <span class="plate-dot" id="p-dot-0"></span>
+        <span class="plate-dot" id="p-dot-1"></span>
+        <span class="plate-dot" id="p-dot-2"></span>
+        <span class="plate-count-num"><span id="dishes-done-count">0</span>/3</span>
+      </div>
+    </div>
+  </header>
+
+  <audio id="audio-engine" preload="metadata"></audio>
+  <canvas id="game-canvas" aria-hidden="true"></canvas>
+
+  <!-- ==================== ESCENARIO PRINCIPAL DE COCINA ==================== -->
+  <main class="kitchen-arcade-wrapper">
+
+    <!-- BANNER PRINCIPAL DE CELEBRACIÓN -->
+    <section class="hero-chef-banner">
+      <div class="hero-awning" aria-hidden="true"></div>
+      <div class="hero-content">
+        <div class="hero-badge-row">
+          <span class="hero-pill-date">20 DE OCTUBRE · DÍA INTERNACIONAL DEL CHEF</span>
+          <span class="hero-pill-mode">CO-OP: YANI &amp; POLLO</span>
+        </div>
+        <h1 class="hero-main-title">Feliz Día de la Chef, Yani</h1>
+        <p class="hero-subtitle">
+          Después de dominar la tinga, hoy sale nuestra receta estelar. Prepara el mole paso a paso en las cuatro estaciones de la cocina.
+        </p>
+      </div>
+    </section>
+
+    <!-- COMANDA ACTIVA Y VISTA EN VIVO DE LA CAZUELA -->
+    <section class="order-rail-section" aria-label="Comanda activa">
+      <div class="ticket-slip">
+        <div class="ticket-clips" aria-hidden="true">
+          <span class="metal-clip"></span>
+          <span class="metal-clip"></span>
+        </div>
+
+        <div class="ticket-head">
+          <div class="ticket-id-group">
+            <span class="ticket-lvl" id="ticket-order-num">COMANDA #01</span>
+            <span class="ticket-recipe-sub">ESPECIALIDAD DE LA CASA</span>
+          </div>
+          <span class="ticket-status-label" id="ticket-status-text">PASO 1 · DESPENSA</span>
+        </div>
+
+        <div class="dish-showcase">
+          <!-- Cazuela de barro interactiva en SVG con capas coherentes por etapa -->
+          <div class="dish-visual-plate" id="live-cazuela-preview">
+            <svg viewBox="0 0 120 120" class="plate-svg" role="img" aria-label="Cazuela de barro artesanal">
+              <defs>
+                <radialGradient id="clayGrad" cx="50%" cy="45%" r="55%">
+                  <stop offset="0%" stop-color="#d35400"/>
+                  <stop offset="70%" stop-color="#a04000"/>
+                  <stop offset="100%" stop-color="#6e2c00"/>
+                </radialGradient>
+                <radialGradient id="moleGrad" cx="45%" cy="40%" r="55%">
+                  <stop offset="0%" stop-color="#4e342e"/>
+                  <stop offset="65%" stop-color="#3e2723"/>
+                  <stop offset="100%" stop-color="#271613"/>
+                </radialGradient>
+              </defs>
+
+              <!-- Asas laterales de la cazuela de barro -->
+              <rect x="2" y="50" width="12" height="20" rx="5" fill="#a04000" stroke="#231815" stroke-width="3"/>
+              <rect x="106" y="50" width="12" height="20" rx="5" fill="#a04000" stroke="#231815" stroke-width="3"/>
+
+              <!-- Cuerpo exterior e interior de la cazuela -->
+              <circle cx="60" cy="60" r="50" fill="url(#clayGrad)" stroke="#231815" stroke-width="4"/>
+              <circle cx="60" cy="60" r="43" fill="none" stroke="#f5cba7" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.65"/>
+              <circle cx="60" cy="60" r="39" fill="#78281f" stroke="#231815" stroke-width="3"/>
+
+              <!-- Etapa 1: Ingredientes seleccionados listos para tostar -->
+              <g id="dish-layer-raw" class="dish-layer">
+                <!-- Chiles secos -->
+                <g id="preview-ing-chiles" class="sub-layer">
+                  <path d="M36 56 C32 45 44 36 54 42 C58 46 56 56 46 60 C39 62 37 59 36 56 Z" fill="#922b21" stroke="#231815" stroke-width="2.2"/>
+                  <path d="M54 42 Q59 38 61 40" stroke="#27ae60" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                </g>
+                <!-- Tableta de cacao y canela -->
+                <g id="preview-ing-cacao" class="sub-layer">
+                  <rect x="60" y="44" width="18" height="15" rx="3" fill="#4e342e" stroke="#231815" stroke-width="2.2"/>
+                  <line x1="69" y1="44" x2="69" y2="59" stroke="#231815" stroke-width="1.5"/>
+                  <line x1="60" y1="51.5" x2="78" y2="51.5" stroke="#231815" stroke-width="1.5"/>
+                </g>
+                <!-- Ajonjolí y especias -->
+                <g id="preview-ing-caldo" class="sub-layer">
+                  <circle cx="58" cy="72" r="10" fill="#f39c12" stroke="#231815" stroke-width="2.2"/>
+                  <circle cx="55" cy="70" r="1.4" fill="#fffdf5"/>
+                  <circle cx="61" cy="71" r="1.4" fill="#fffdf5"/>
+                  <circle cx="58" cy="75" r="1.4" fill="#fffdf5"/>
+                </g>
+              </g>
+
+              <!-- Etapa 2: Pasta concentrada recién molida en el metate -->
+              <g id="dish-layer-paste" class="dish-layer">
+                <path d="M40 58 Q50 40 72 46 Q86 60 72 76 Q52 84 40 68 Z" fill="#4e342e" stroke="#231815" stroke-width="3"/>
+                <path d="M48 56 Q60 48 68 55" stroke="#8d6e63" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <path d="M50 66 Q62 72 70 64" stroke="#6d4c41" stroke-width="2" fill="none" stroke-linecap="round"/>
+              </g>
+
+              <!-- Etapa 3: Mole hirviendo y espesando en toda la cazuela -->
+              <g id="dish-layer-simmer" class="dish-layer">
+                <circle cx="60" cy="60" r="36" fill="url(#moleGrad)" stroke="#231815" stroke-width="2.5"/>
+                <path d="M38 52 Q52 38 74 46" stroke="#6d4c41" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+                <circle cx="48" cy="64" r="3.5" fill="#271613" stroke="#8d6e63" stroke-width="1.5"/>
+                <circle cx="72" cy="58" r="2.8" fill="#271613" stroke="#8d6e63" stroke-width="1.5"/>
+                <circle cx="62" cy="72" r="2.2" fill="#271613" stroke="#8d6e63" stroke-width="1.5"/>
+              </g>
+
+              <!-- Etapa 4: Emplatado final con arroz, pollo bañado en mole y ajonjolí -->
+              <g id="dish-layer-final" class="dish-layer">
+                <!-- Base de arroz rojo -->
+                <ellipse cx="47" cy="65" rx="20" ry="14" fill="#e67e22" stroke="#231815" stroke-width="2.5"/>
+                <circle cx="41" cy="63" r="1.3" fill="#fad7a0"/>
+                <circle cx="47" cy="68" r="1.3" fill="#fad7a0"/>
+                <!-- Pieza de pollo bañada en mole -->
+                <path d="M44 52 Q60 36 80 50 Q84 68 64 76 Q42 74 44 52 Z" fill="url(#moleGrad)" stroke="#231815" stroke-width="3"/>
+                <!-- Brillo del mole -->
+                <path d="M52 50 Q64 44 73 52" stroke="#8d6e63" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
+                <!-- Lluvia de ajonjolí tostado -->
+                <circle cx="56" cy="55" r="1.7" fill="#fffdf5"/>
+                <circle cx="63" cy="52" r="1.7" fill="#fffdf5"/>
+                <circle cx="69" cy="56" r="1.7" fill="#fffdf5"/>
+                <circle cx="60" cy="60" r="1.7" fill="#fffdf5"/>
+                <circle cx="53" cy="63" r="1.7" fill="#fffdf5"/>
+                <circle cx="66" cy="63" r="1.7" fill="#fffdf5"/>
+                <circle cx="59" cy="67" r="1.7" fill="#fffdf5"/>
+                <circle cx="73" cy="61" r="1.7" fill="#fffdf5"/>
+              </g>
+            </svg>
+            <span class="cazuela-live-tag" id="cazuela-state-tag">CAZUELA VACÍA</span>
+          </div>
+
+          <!-- Nota de Cocina y Explicación Coherente -->
+          <div class="dish-info-card">
+            <div class="dish-title-row">
+              <span class="dish-tag">PLATILLO TITULAR</span>
+              <h2 class="dish-title" id="dish-title-text">El Mole de Yani</h2>
+            </div>
+            <p class="dish-desc" id="dish-stage-description">
+              Un buen mole empieza por elegir bien la base. Reúne los tres ingredientes de la despensa para encender el comal.
+            </p>
+            <div class="chef-whisper-box" id="chef-whisper-box">
+              <span class="whisper-speaker" id="whisper-speaker">NOTA DE COCINA:</span>
+              <span class="whisper-text" id="whisper-text">Toca cada ingrediente en la Estación 1 para agregarlo a la preparación.</span>
+            </div>
+          </div>
+
+          <!-- Medidor general de la orden -->
+          <div class="dish-progress-box">
+            <div class="dish-progress-txt">
+              <span>AVANCE DE ORDEN</span>
+              <span id="dish-step-text">PASO 1 DE 4</span>
+            </div>
+            <div class="dish-bar-track">
+              <div class="dish-bar-fill" id="dish-bar-fill"></div>
+            </div>
+            <ul class="mini-recipe-checklist" id="recipe-checklist">
+              <li class="chk-item current" id="chk-1"><span class="chk-box"></span>1. Tostar base seca</li>
+              <li class="chk-item" id="chk-2"><span class="chk-box"></span>2. Moler pasta en piedra</li>
+              <li class="chk-item" id="chk-3"><span class="chk-box"></span>3. Sazonar a fuego lento</li>
+              <li class="chk-item" id="chk-4"><span class="chk-box"></span>4. Emplatar y servir</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAPA LINEAL DE PROGRESO DE ETAPAS -->
+    <nav class="stages-stepper-bar" aria-label="Etapas de preparación">
+      <div class="step-pill active" id="step-pill-1">
+        <span class="step-num">1</span>
+        <span class="step-name">Despensa</span>
+      </div>
+      <div class="step-connector" id="conn-1"></div>
+      <div class="step-pill locked" id="step-pill-2">
+        <span class="step-num">2</span>
+        <span class="step-name">Metate</span>
+      </div>
+      <div class="step-connector" id="conn-2"></div>
+      <div class="step-pill locked" id="step-pill-3">
+        <span class="step-num">3</span>
+        <span class="step-name">Cazuela</span>
+      </div>
+      <div class="step-connector" id="conn-3"></div>
+      <div class="step-pill locked" id="step-pill-4">
+        <span class="step-num">4</span>
+        <span class="step-name">El Pase</span>
+      </div>
+    </nav>
+
+    <!-- ARENA DE 4 ESTACIONES INTERACTIVAS -->
+    <section class="kitchen-stage-grid" aria-label="Estaciones de trabajo">
+
+      <!-- ==================== ESTACIÓN 1: DESPENSA Y COMAL ==================== -->
+      <article class="station-island island-pantry active-focus" id="station-pantry" data-stage="1">
+        <div class="island-roof">
+          <span class="station-title-tab">ESTACIÓN 1 · DESPENSA</span>
+          <span class="station-pill-hint" id="badge-pantry">ACTIVA</span>
+        </div>
+        <div class="island-body">
+          <p class="step-guide" id="guide-pantry">Selecciona los 3 ingredientes base para el mole:</p>
+
+          <div class="ingredients-dock">
+            <!-- Ingrediente 1: Chiles Secos -->
+            <button class="ingredient-card" id="item-chiles" type="button" data-ing="chiles">
+              <svg viewBox="0 0 60 60" class="ing-svg" aria-hidden="true">
+                <path d="M14 42 C10 26 24 12 40 18 C48 22 48 36 36 46 C26 52 17 48 14 42 Z" fill="#922b21" stroke="#231815" stroke-width="3"/>
+                <path d="M22 36 Q30 24 38 26" stroke="#c0392b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <path d="M40 18 Q47 10 52 13" stroke="#27ae60" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+              </svg>
+              <span class="ing-text-block">
+                <span class="ing-name">Chiles Mulato y Ancho</span>
+                <span class="ing-sub">Color oscuro y picor suave</span>
+              </span>
+              <span class="ing-status" id="status-chiles">ELEGIR</span>
+            </button>
+
+            <!-- Ingrediente 2: Cacao y Canela -->
+            <button class="ingredient-card" id="item-cacao" type="button" data-ing="cacao">
+              <svg viewBox="0 0 60 60" class="ing-svg" aria-hidden="true">
+                <rect x="12" y="18" width="30" height="24" rx="4" fill="#4e342e" stroke="#231815" stroke-width="3"/>
+                <line x1="27" y1="18" x2="27" y2="42" stroke="#231815" stroke-width="2.2"/>
+                <line x1="12" y1="30" x2="42" y2="30" stroke="#231815" stroke-width="2.2"/>
+                <path d="M38 14 L50 44" stroke="#b9770e" stroke-width="5" stroke-linecap="round"/>
+                <path d="M38 14 L50 44" stroke="#231815" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <span class="ing-text-block">
+                <span class="ing-name">Cacao y Canela</span>
+                <span class="ing-sub">Equilibrio dulce y aroma</span>
+              </span>
+              <span class="ing-status" id="status-cacao">ELEGIR</span>
+            </button>
+
+            <!-- Ingrediente 3: Ajonjolí y Fondo -->
+            <button class="ingredient-card" id="item-caldo" type="button" data-ing="caldo">
+              <svg viewBox="0 0 60 60" class="ing-svg" aria-hidden="true">
+                <circle cx="30" cy="32" r="17" fill="#f39c12" stroke="#231815" stroke-width="3"/>
+                <path d="M18 32 A12 12 0 0 0 42 32 Z" fill="#e67e22"/>
+                <circle cx="25" cy="26" r="2" fill="#fffdf5"/>
+                <circle cx="33" cy="27" r="2" fill="#fffdf5"/>
+                <circle cx="29" cy="33" r="2" fill="#fffdf5"/>
+                <circle cx="35" cy="35" r="2" fill="#fffdf5"/>
+              </svg>
+              <span class="ing-text-block">
+                <span class="ing-name">Ajonjolí y Caldo</span>
+                <span class="ing-sub">Textura y fondo para espesar</span>
+              </span>
+              <span class="ing-status" id="status-caldo">ELEGIR</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- ==================== ESTACIÓN 2: PIEDRA DE METATE ==================== -->
+      <article class="station-island island-cutting stage-locked" id="station-cutting" data-stage="2">
+        <div class="island-roof">
+          <span class="station-title-tab">ESTACIÓN 2 · METATE</span>
+          <span class="station-pill-hint" id="badge-cutting">EN ESPERA</span>
+        </div>
+        <div class="island-body">
+          <p class="step-guide" id="guide-cutting">Muele los ingredientes tostados hasta lograr una pasta fina:</p>
+
+          <div class="station-visual-box" id="cutting-board" role="button" tabindex="0" aria-label="Piedra de metate para moler">
+            <svg viewBox="0 0 180 115" class="station-svg" aria-hidden="true">
+              <!-- Patas de piedra volcánica -->
+              <rect x="30" y="84" width="14" height="18" rx="4" fill="#2c3e50" stroke="#231815" stroke-width="3"/>
+              <rect x="136" y="84" width="14" height="18" rx="4" fill="#2c3e50" stroke="#231815" stroke-width="3"/>
+              <!-- Plancha del metate -->
+              <rect x="18" y="24" width="144" height="66" rx="14" fill="#566573" stroke="#231815" stroke-width="4"/>
+              <rect x="28" y="32" width="124" height="50" rx="10" fill="#34495e" stroke="#231815" stroke-width="2.5"/>
+              <!-- Ingredientes convirtiéndose en pasta -->
+              <g id="cutting-items-visual" style="opacity: 0.2;">
+                <ellipse id="paste-spread" cx="90" cy="57" rx="36" ry="16" fill="#4e342e" stroke="#231815" stroke-width="2.5"/>
+                <circle cx="74" cy="54" r="6" fill="#922b21"/>
+                <circle cx="104" cy="59" r="5" fill="#d35400"/>
+                <circle cx="88" cy="52" r="2" fill="#fffdf5"/>
+                <circle cx="95" cy="62" r="2" fill="#fffdf5"/>
+              </g>
+              <!-- Mano del metate (metlapil) animada -->
+              <g id="knife-arm" class="knife-group">
+                <rect x="46" y="42" width="88" height="18" rx="9" fill="#95a5a6" stroke="#231815" stroke-width="3.5"/>
+                <line x1="60" y1="48" x2="120" y2="48" stroke="#ecf0f1" stroke-width="2.5" stroke-linecap="round"/>
+              </g>
+            </svg>
+            <span class="station-floating-tag" id="cut-feedback">PIEDRA LISTA</span>
+          </div>
+
+          <div class="station-ctrl-row">
+            <div class="meter-header">
+              <span class="meter-caption" id="chop-status-note">Esperando ingredientes...</span>
+              <span class="meter-fraction" id="chop-counter">0/5</span>
+            </div>
+            <div class="cut-meter-box">
+              <div class="cut-meter-bar" id="cut-meter-fill"></div>
+            </div>
+            <button class="stage-btn btn-chop" id="btn-chop-action" type="button" disabled>
+              <span class="btn-lbl" id="chop-label">Moler en Piedra</span>
+              <span class="btn-badge" id="chop-btn-badge">PASO 2</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- ==================== ESTACIÓN 3: CAZUELA A FUEGO LENTO ==================== -->
+      <article class="station-island island-stove stage-locked" id="station-stove" data-stage="3">
+        <div class="island-roof">
+          <span class="station-title-tab">ESTACIÓN 3 · CAZUELA</span>
+          <span class="station-pill-hint" id="badge-stove">EN ESPERA</span>
+        </div>
+        <div class="island-body">
+          <p class="step-guide" id="guide-stove">Integra la pasta con el caldo a fuego lento sin dejar de mover:</p>
+
+          <div class="station-visual-box" id="stove-unit" role="button" tabindex="0" aria-label="Cazuela en la estufa">
+            <svg viewBox="0 0 180 115" class="station-svg" aria-hidden="true">
+              <!-- Base de fogón -->
+              <rect x="20" y="16" width="140" height="84" rx="12" fill="#2c3e50" stroke="#231815" stroke-width="4"/>
+              <circle cx="90" cy="58" r="36" fill="#1a252f" stroke="#231815" stroke-width="3"/>
+              <!-- Flamas del quemador -->
+              <g id="stove-fire-fx" class="fire-flame">
+                <circle cx="90" cy="58" r="33" fill="none" stroke="#e67e22" stroke-width="3" stroke-dasharray="6 4"/>
+                <path d="M58 84 Q90 66 122 84" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round"/>
+              </g>
+              <!-- Cazuela de barro al fuego -->
+              <circle cx="90" cy="56" r="29" fill="#c0392b" stroke="#231815" stroke-width="3.5"/>
+              <circle id="pan-food-simmer" cx="90" cy="56" r="23" fill="#3e2723" stroke="#231815" stroke-width="2.5" style="opacity: 0.25;"/>
+              <!-- Burbujas y brillo de hervor -->
+              <g id="simmer-bubbles" style="opacity: 0;">
+                <circle cx="82" cy="52" r="3" fill="#5d4037" stroke="#8d6e63" stroke-width="1.2"/>
+                <circle cx="98" cy="60" r="3.5" fill="#5d4037" stroke="#8d6e63" stroke-width="1.2"/>
+                <circle cx="88" cy="64" r="2.2" fill="#5d4037" stroke="#8d6e63" stroke-width="1.2"/>
+              </g>
+              <!-- Pala de madera para mover el mole -->
+              <g id="wooden-spoon" class="spoon-group">
+                <line x1="90" y1="54" x2="128" y2="20" stroke="#d68910" stroke-width="7" stroke-linecap="round"/>
+                <line x1="90" y1="54" x2="128" y2="20" stroke="#231815" stroke-width="2" stroke-linecap="round"/>
+                <ellipse cx="88" cy="56" rx="9" ry="6" fill="#f39c12" stroke="#231815" stroke-width="2.5"/>
+              </g>
+            </svg>
+            <span class="station-floating-tag tag-fire" id="cook-feedback">FUEGO LENTO</span>
+          </div>
+
+          <div class="station-ctrl-row">
+            <div class="meter-header">
+              <span class="meter-caption" id="cook-status-note">Esperando molienda...</span>
+              <span class="meter-fraction" id="cook-counter">0/5</span>
+            </div>
+            <div class="cut-meter-box">
+              <div class="cut-meter-bar bar-fire" id="stove-meter-fill"></div>
+            </div>
+            <button class="stage-btn btn-stove" id="btn-cook-action" type="button" disabled>
+              <span class="btn-lbl" id="cook-label">Mover la Cazuela</span>
+              <span class="btn-badge" id="cook-btn-badge">PASO 3</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- ==================== ESTACIÓN 4: VENTANA DEL PASE ==================== -->
+      <article class="station-island island-delivery stage-locked" id="station-delivery" data-stage="4">
+        <div class="island-roof">
+          <span class="station-title-tab">ESTACIÓN 4 · EL PASE</span>
+          <span class="station-pill-hint" id="badge-delivery">EN ESPERA</span>
+        </div>
+        <div class="island-body">
+          <p class="step-guide" id="guide-delivery">Corona con ajonjolí tostado y toca la campana para entregar:</p>
+
+          <div class="station-visual-box" id="delivery-zone" role="button" tabindex="0" aria-label="Campana de entrega del pase">
+            <svg viewBox="0 0 180 115" class="station-svg" aria-hidden="true">
+              <!-- Barra de acero del pase -->
+              <rect x="16" y="68" width="148" height="32" rx="8" fill="#bdc3c7" stroke="#231815" stroke-width="4"/>
+              <line x1="28" y1="78" x2="152" y2="78" stroke="#ecf0f1" stroke-width="3" stroke-linecap="round"/>
+              <!-- Base de la campana -->
+              <rect x="46" y="60" width="88" height="9" rx="3" fill="#7f8c8d" stroke="#231815" stroke-width="3"/>
+              <!-- Domo dorado de la campana -->
+              <g id="delivery-bell-dome">
+                <path d="M52 60 Q90 14 128 60 Z" fill="#f1c40f" stroke="#231815" stroke-width="4"/>
+                <path d="M64 52 Q84 26 102 36" stroke="#fff9c4" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <circle cx="90" cy="18" r="6" fill="#e67e22" stroke="#231815" stroke-width="3"/>
+              </g>
+            </svg>
+            <span class="station-floating-tag tag-pass" id="pass-feedback">VENTANA LISTA</span>
+          </div>
+
+          <div class="station-ctrl-row">
+            <div class="meter-header">
+              <span class="meter-caption" id="delivery-msg">Esperando cazuela terminada...</span>
+              <span class="meter-fraction" id="deliver-ready-indicator">LISTO</span>
+            </div>
+            <div class="cut-meter-box">
+              <div class="cut-meter-bar bar-pass" id="pass-meter-fill"></div>
+            </div>
+            <button class="stage-btn btn-deliver" id="btn-deliver-action" type="button" disabled>
+              <span class="btn-lbl" id="deliver-label">Servir Cazuela</span>
+              <span class="btn-badge" id="deliver-btn-badge">PASO 4</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- ==================== TARJETA DE SOCIOS Y DEDICATORIA FINAL ==================== -->
+    <section class="partnership-footer-card" aria-label="Dedicatoria para Chef Yani">
+      <div class="partner-card-header">
+        <span class="badge-duo">SOCIOS DE COCINA Y VIDA</span>
+        <h2>El Futuro Restaurante de Yani &amp; Pollo</h2>
+        <p class="partner-header-lead">
+          Una cocina funciona cuando hay buen sazón en el fuego y buen equipo en la barra.
+        </p>
+      </div>
+
+      <div class="partner-columns">
+        <div class="chef-box yani-box">
+          <span class="box-role">CHEF EJECUTIVA · MENTE MAESTRA</span>
+          <strong class="box-name">Chef Yani</strong>
+          <p class="box-desc">
+            Tienes ese talento natural para transformar ingredientes sueltos en platos que reúnen a todos en la mesa. La cocina te queda increíble.
+          </p>
+        </div>
+
+        <div class="duo-connector" aria-hidden="true">
+          <span class="duo-amp">&amp;</span>
+        </div>
+
+        <div class="chef-box pollo-box">
+          <span class="box-role">SOUS-CHEF · SOCIO Y FAN #1</span>
+          <strong class="box-name">Pollo</strong>
+          <p class="box-desc">
+            Encargado oficial del control de calidad, de poner buena música de fondo y de aplaudir cada receta nueva que sale de tus manos.
+          </p>
+        </div>
+      </div>
+
+      <div class="anniversary-message">
+        <p class="sat-joke">
+          "Primero dominamos la tinga y hoy perfeccionamos el mole... un platillo más y ya podemos abrir nuestro restaurante y evadir los impuestos como profesionales. juasjuas"
+        </p>
+        <p class="warm-wishes">
+          Feliz Día de la Chef, Yani. Qué bonito es verte disfrutar tanto lo que haces y ponerle corazón a cada detalle. Mi mesa favorita siempre va a ser donde cocines tú.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODAL DE ORDEN SERVIDA ==================== -->
+  <div class="modal-plate-served hidden" id="served-popup" role="dialog" aria-modal="true" aria-labelledby="popup-dish-title">
+    <div class="popup-box">
+      <!-- 3 Estrellas en SVG puro (sin emojis ni caracteres especiales) -->
+      <div class="popup-stars-svg" aria-hidden="true">
+        <svg viewBox="0 0 36 36" class="star-icon"><polygon points="18,2 23,12 34,14 26,22 28,33 18,28 8,33 10,22 2,14 13,12" fill="#f1c40f" stroke="#231815" stroke-width="2.5"/></svg>
+        <svg viewBox="0 0 36 36" class="star-icon star-center"><polygon points="18,2 23,12 34,14 26,22 28,33 18,28 8,33 10,22 2,14 13,12" fill="#f1c40f" stroke="#231815" stroke-width="2.5"/></svg>
+        <svg viewBox="0 0 36 36" class="star-icon"><polygon points="18,2 23,12 34,14 26,22 28,33 18,28 8,33 10,22 2,14 13,12" fill="#f1c40f" stroke="#231815" stroke-width="2.5"/></svg>
+      </div>
+
+      <span class="popup-ribbon" id="popup-ribbon-text">COMANDA ENTREGADA</span>
+      <h2 id="popup-dish-title">Mole de Tres Estrellas</h2>
+      <p id="popup-congrats-text">
+        Espeso, brillante y con su ajonjolí recién tostado. Ya sabemos cocinar tinga y mole; oficialmente estamos listos para abrir el restaurante y evadir impuestos. juasjuas
+      </p>
+      <div class="popup-quote-note" id="popup-quote-note">
+        Feliz Día de la Chef, Yani. Gracias por compartir tu sazón y tu alegría conmigo. — Pollo
+      </div>
+      <div class="popup-score-add" id="popup-score-add">+50,000 AL FONDO DEL RESTAURANTE</div>
+      <button class="popup-btn" id="btn-popup-ok" type="button">Preparar Otra Cazuela</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
