@@ -13,17 +13,30 @@
 
   <!-- ==================== TOP BAR STICKY: HUD & TOCADISCOS ==================== -->
   <header class="game-topbar" id="game-topbar">
-    <div class="topbar-chefs">
-      <div class="chefs-tag" title="Dupla titular de cocina">
-        <span class="chef-dot dot-yani"></span>
-        <span class="chef-name chief">CHEF YANI</span>
-        <span class="chef-x">&amp;</span>
-        <span class="chef-dot dot-pollo"></span>
-        <span class="chef-name partner">POLLO</span>
+    <div class="topbar-header-row">
+      <div class="topbar-chefs">
+        <div class="chefs-tag" title="Dupla titular de cocina">
+          <span class="chef-dot dot-yani"></span>
+          <span class="chef-name chief">CHEF YANI</span>
+          <span class="chef-x">&amp;</span>
+          <span class="chef-dot dot-pollo"></span>
+          <span class="chef-name partner">POLLO</span>
+        </div>
+        <div class="score-pill" title="Fondo acumulado para el futuro restaurante">
+          <span class="score-label">FONDO:</span>
+          <span class="score-num" id="hud-score">$0</span>
+        </div>
       </div>
-      <div class="score-pill" title="Fondo acumulado para el futuro restaurante">
-        <span class="score-label">FONDO:</span>
-        <span class="score-num" id="hud-score">$0</span>
+
+      <!-- Contador de Órdenes Completadas -->
+      <div class="topbar-served" title="Cazuelas servidas en el turno">
+        <span class="served-label">ÓRDENES:</span>
+        <div class="plates-counter">
+          <span class="plate-dot" id="p-dot-0"></span>
+          <span class="plate-dot" id="p-dot-1"></span>
+          <span class="plate-dot" id="p-dot-2"></span>
+          <span class="plate-count-num"><span id="dishes-done-count">0</span>/3</span>
+        </div>
       </div>
     </div>
 
@@ -70,17 +83,6 @@
         <button class="q-chip active" type="button" data-idx="0">Jumpsuit</button>
         <button class="q-chip" type="button" data-idx="1">My Blood</button>
         <button class="q-chip" type="button" data-idx="2">Shake It Off</button>
-      </div>
-    </div>
-
-    <!-- Contador de Órdenes Completadas -->
-    <div class="topbar-served" title="Cazuelas servidas en el turno">
-      <span class="served-label">ÓRDENES:</span>
-      <div class="plates-counter">
-        <span class="plate-dot" id="p-dot-0"></span>
-        <span class="plate-dot" id="p-dot-1"></span>
-        <span class="plate-dot" id="p-dot-2"></span>
-        <span class="plate-count-num"><span id="dishes-done-count">0</span>/3</span>
       </div>
     </div>
   </header>

@@ -1475,7 +1475,11 @@ h1, h2, h3, .score-num, .chef-name, .track-title-text, .dish-title, .box-name, .
   .dish-showcase {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 1rem;
+    gap: 1.1rem;
+  }
+
+  .dish-visual-plate {
+    margin: 0 auto;
   }
 
   .dish-title-row {
@@ -1489,102 +1493,422 @@ h1, h2, h3, .score-num, .chef-name, .track-title-text, .dish-title, .box-name, .
 }
 
 @media (max-width: 720px) {
+  body {
+    padding-bottom: 3rem;
+  }
+
+  .kitchen-arcade-wrapper {
+    margin: 0.75rem auto 0;
+    padding: 0 0.65rem;
+    gap: 0.9rem;
+  }
+
+  /* Topbar compacta y ordenada */
   .game-topbar {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "chefs score"
-      "player player";
+    display: flex;
+    flex-direction: column;
     padding: 0.45rem 0.65rem;
     gap: 0.45rem;
   }
 
-  .topbar-chefs {
-    grid-area: chefs;
+  .topbar-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
     gap: 0.4rem;
   }
 
+  /* Chefs y puntaje */
+  .topbar-chefs {
+    gap: 0.35rem;
+    flex-wrap: nowrap;
+  }
+
   .chefs-tag {
-    padding: 0.22rem 0.5rem;
+    padding: 0.22rem 0.45rem;
+    gap: 0.3rem;
   }
 
   .chef-name {
-    font-size: 0.76rem;
+    font-size: 0.72rem;
   }
 
   .score-pill {
-    padding: 0.2rem 0.5rem;
+    padding: 0.2rem 0.45rem;
+    gap: 0.3rem;
+  }
+
+  .score-label {
+    font-size: 0.58rem;
   }
 
   .score-num {
-    font-size: 0.98rem;
+    font-size: 0.88rem;
   }
 
   .topbar-served {
-    grid-area: score;
+    margin-left: auto;
+    gap: 0.35rem;
   }
 
   .served-label {
     display: none;
   }
 
+  .plate-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .plate-count-num {
+    font-size: 0.82rem;
+  }
+
+  /* Tocadiscos adaptado para pantallas angostas */
   .topbar-player {
-    grid-area: player;
+    width: 100%;
     max-width: 100%;
-    padding: 0.3rem 0.55rem;
-    gap: 0.5rem;
+    padding: 0.3rem 0.5rem;
+    gap: 0.45rem;
+    flex-wrap: wrap;
   }
 
   .mini-vinyl {
+    width: 30px;
+    height: 30px;
+  }
+
+  .vinyl-core {
+    width: 13px;
+    height: 13px;
+    font-size: 0.38rem;
+  }
+
+  .player-buttons {
+    gap: 0.25rem;
+  }
+
+  .t-btn {
+    width: 28px;
+    height: 27px;
+  }
+
+  .play-btn {
     width: 32px;
-    height: 32px;
+    height: 28px;
+  }
+
+  .track-hud-info {
+    min-width: 95px;
+    gap: 0.15rem;
+  }
+
+  .track-title-text {
+    font-size: 0.78rem;
   }
 
   .track-artist-text {
     display: none;
   }
 
+  .trench-tape-mini {
+    font-size: 0.5rem;
+    padding: 0.04rem 0.25rem;
+  }
+
+  .quick-songs {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.25rem;
+    margin-top: 0.2rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
   .q-chip {
-    padding: 0.2rem 0.4rem;
-    font-size: 0.64rem;
+    flex: 1;
+    text-align: center;
+    padding: 0.2rem 0.35rem;
+    font-size: 0.62rem;
   }
 
-  .kitchen-stage-grid {
-    grid-template-columns: 1fr;
+  /* Banner Hero */
+  .hero-content {
+    padding: 0.9rem 0.85rem 1rem;
   }
 
+  .hero-pill-date,
+  .hero-pill-mode {
+    font-size: 0.62rem;
+    padding: 0.15rem 0.45rem;
+  }
+
+  .hero-main-title {
+    font-size: 1.45rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.85rem;
+    line-height: 1.35;
+  }
+
+  /* Comanda */
+  .ticket-slip {
+    padding: 1rem 0.85rem;
+  }
+
+  .ticket-head {
+    margin-bottom: 0.75rem;
+  }
+
+  .ticket-lvl {
+    font-size: 0.8rem;
+    padding: 0.12rem 0.45rem;
+  }
+
+  .ticket-recipe-sub {
+    font-size: 0.65rem;
+  }
+
+  .ticket-status-label {
+    font-size: 0.68rem;
+    padding: 0.18rem 0.5rem;
+  }
+
+  .plate-svg {
+    width: 110px;
+    height: 110px;
+  }
+
+  .dish-title {
+    font-size: 1.35rem;
+  }
+
+  .dish-desc {
+    font-size: 0.88rem;
+  }
+
+  .chef-whisper-box {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .dish-progress-box {
+    padding: 0.7rem 0.75rem;
+  }
+
+  .mini-recipe-checklist {
+    gap: 0.22rem;
+  }
+
+  .chk-item {
+    font-size: 0.7rem;
+  }
+
+  /* Stepper lineal */
   .stages-stepper-bar {
-    padding: 0.5rem 0.6rem;
-    gap: 0.3rem;
+    padding: 0.4rem 0.5rem;
+    gap: 0.25rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .step-pill {
-    padding: 0.22rem 0.5rem;
-    font-size: 0.72rem;
+    padding: 0.2rem 0.45rem;
+    font-size: 0.68rem;
+    gap: 0.25rem;
+  }
+
+  .step-num {
+    width: 16px;
+    height: 16px;
+    font-size: 0.6rem;
   }
 
   .step-connector {
-    max-width: 16px;
+    min-width: 10px;
+    max-width: 18px;
   }
 
-  .ticket-slip {
-    padding: 1.1rem;
+  /* Estaciones de Cocina */
+  .kitchen-stage-grid {
+    grid-template-columns: 1fr;
+    gap: 0.95rem;
   }
 
+  .station-island {
+    border-radius: 15px;
+  }
+
+  .island-roof {
+    padding: 0.45rem 0.75rem;
+  }
+
+  .station-title-tab {
+    font-size: 0.82rem;
+  }
+
+  .station-pill-hint {
+    font-size: 0.6rem;
+  }
+
+  .island-body {
+    padding: 0.85rem 0.8rem 0.95rem;
+    gap: 0.75rem;
+  }
+
+  .step-guide {
+    font-size: 0.8rem;
+  }
+
+  .ingredient-card {
+    padding: 0.45rem 0.65rem;
+    gap: 0.55rem;
+  }
+
+  .ing-svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .ing-name {
+    font-size: 0.85rem;
+  }
+
+  .ing-sub {
+    font-size: 0.68rem;
+  }
+
+  .ing-status {
+    font-size: 0.64rem;
+    padding: 0.16rem 0.45rem;
+  }
+
+  .station-visual-box {
+    height: 98px;
+    max-width: 210px;
+  }
+
+  .station-svg {
+    width: 150px;
+    height: 90px;
+  }
+
+  .station-floating-tag {
+    font-size: 0.6rem;
+    padding: 0.12rem 0.42rem;
+    top: -8px;
+    right: 6px;
+  }
+
+  .meter-header {
+    font-size: 0.72rem;
+  }
+
+  .stage-btn {
+    min-height: 44px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .stage-btn .btn-badge {
+    font-size: 0.68rem;
+    padding: 0.15rem 0.45rem;
+  }
+
+  /* Tarjeta de Socios */
   .partnership-footer-card {
-    padding: 1.3rem 1.1rem;
+    padding: 1.25rem 0.95rem;
+    border-radius: 18px;
+  }
+
+  .partnership-footer-card h2 {
+    font-size: 1.35rem;
+  }
+
+  .partner-header-lead {
+    font-size: 0.84rem;
+    margin-bottom: 1rem;
   }
 
   .partner-columns {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.75rem;
   }
 
   .chef-box {
     max-width: 100%;
+    padding: 0.9rem 1rem;
+  }
+
+  .box-name {
+    font-size: 1.3rem;
+  }
+
+  .box-desc {
+    font-size: 0.84rem;
   }
 
   .duo-connector {
-    margin: -0.3rem 0;
+    margin: -0.2rem 0;
+  }
+
+  .duo-amp {
+    width: 36px;
+    height: 36px;
+    font-size: 1.15rem;
+  }
+
+  .anniversary-message {
+    padding: 0.95rem 1rem;
+  }
+
+  .sat-joke {
+    font-size: 1.05rem;
+  }
+
+  .warm-wishes {
+    font-size: 0.88rem;
+  }
+
+  /* Modal de Entrega */
+  .popup-box {
+    padding: 1.4rem 1.1rem;
+    border-radius: 18px;
+  }
+
+  .star-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .star-center {
+    width: 38px;
+    height: 38px;
+  }
+
+  .popup-box h2 {
+    font-size: 1.35rem;
+  }
+
+  .popup-box p {
+    font-size: 0.88rem;
+  }
+
+  .popup-quote-note {
+    font-size: 0.82rem;
+    padding: 0.55rem 0.7rem;
+  }
+
+  .popup-score-add {
+    font-size: 0.98rem;
+  }
+
+  .popup-btn {
+    padding: 0.7rem;
+    font-size: 1rem;
   }
 }
